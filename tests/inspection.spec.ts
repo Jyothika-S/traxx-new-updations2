@@ -32,7 +32,7 @@ test('Inspection Workflow: Login, Create, Verify Details', async ({page}) => {
     const inspOverviewPage = new InspOverviewPage(page);
     const inspStatisticsPage = new InspStatisticsPage(page);
 
-    await test.step('Verify inspection location page', async () => {
+    await test.step('Login to application', async () => {
         await login.gotoLoginPage()
         await login.login(loginData.username, loginData.password)
         await login.verifyRedirection()
