@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
+// import { test } from './customTest'
 import { LoginPage } from '../pages/loginPage';
-import loginData from '../test-data/loginData.json'
 import { InspLocationPage } from '../pages/inspectionLocation';
 import { HomePage } from '../pages/homePage';
 import { InspLogPage } from '../pages/inspectionLog'
@@ -12,16 +12,21 @@ let inspId : string;
 let location: string;
 let venue: string;
 let elements: string[] = [];
-const baseURL = process.env.BASEURL || "";
+
+const username = process.env.USER_NAME || "";
+const password = process.env.PASSWORD || "";
+console.log('username: ' + username)
+console.log('password: ' + password)
+
 
 // test('Login to application', async ({page}) => {
 //     const login = new LoginPage(page);
 //     const homePage = new HomePage(page);
 //     //login to application
-//         await login.gotoLoginPage()
-//         await login.login(loginData.username, loginData.password)
-//         await login.verifyRedirection()
-//         expect(login.currentURL).toBe(baseURL + inspectionTestData.urls.home);
+//         // await login.gotoLoginPage()
+//         // await login.login(username, password)
+//         // await login.verifyRedirection()
+//         // expect(login.currentURL).toBe(baseURL + inspectionTestData.urls.home);
 // })
 
 test('Inspection Workflow: Login, Create, Verify Details', async ({page}) => {
@@ -34,7 +39,7 @@ test('Inspection Workflow: Login, Create, Verify Details', async ({page}) => {
 
     await test.step('Login to application', async () => {
         await login.gotoLoginPage()
-        await login.login(loginData.username, loginData.password)
+        await login.login(username, password)
         await login.verifyRedirection()
         // expect(login.currentURL).toBe(baseURL + inspectionTestData.urls.home);
     })
