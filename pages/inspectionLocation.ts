@@ -1,9 +1,6 @@
 import { Locator, Page } from "@playwright/test";
 import inspectionTestData from "../test-data/inspectionTestData.json"
 
-// let inspId : string;
-// let location: string;
-const baseURL = process.env.BASEURL || "";
 export class InspLocationPage {
     page: Page;
     locName: Locator;

@@ -1,8 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import inspectionTestData from "../test-data/inspectionTestData.json"
 
-
-const baseURL = process.env.BASEURL || "";
 export class LoginPage {
     page: Page;
     emailClick: Locator;

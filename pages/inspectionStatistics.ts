@@ -2,8 +2,6 @@ import { Locator, Page } from "@playwright/test";
 import inspectionTestData from "../test-data/inspectionTestData.json"
 import { ReusableMethods } from "../utils/reusable-methods";
 
-
-const baseURL = process.env.BASEURL || "";
 export class InspStatisticsPage {
     page: Page;
     currentURL: string;
