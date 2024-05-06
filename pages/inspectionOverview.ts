@@ -29,17 +29,6 @@ export class InspOverviewPage {
         this.currentURL = this.page.url();
     }
 
-//passes in sandbox but not in chrome
-    // async selectVenue(venue: string) {
-    //     this.venueFilter.click();   
-    //     console.log('venue in selectVenue(): ', venue)
-    //      const optionLocator = this.venueOptionDropdown.locator(`li div:has-text("${venue}")`);
-    //      console.log('optionLocator: ', optionLocator)
-    //      await optionLocator.click();
-    //      await this.applyBtn.click();
-    // }
-
-    //passed in sandbox and chrome
     async selectVenue(venue: string) {
         this.venueFilter.click();   
         console.log('venue in selectVenue(): ', venue)
@@ -48,15 +37,6 @@ export class InspOverviewPage {
          await optionLocator.click();
          await this.applyBtn.click();
     }
-    
-
-
-    // async verifyFilteredInspection(venue: string){
-    //     this.expandVenue = this.page.getByRole('link', { name: `▶ ${venue}` })
-    //     this.expandVenue.click();
-    //     this.inspIdText = await this.inspId.innerHTML();
-    //     console.log("this.inspIdText: ", this.inspIdText)
-    // }
     
     async verifyFilteredInspection(venue: string, id: string) {
         this.expandVenue =  this.page.getByRole('link', { name: `▶ ${venue}` });
@@ -69,4 +49,21 @@ export class InspOverviewPage {
         this.inspIdText = await inspectionIdLocator.innerHTML();
         console.log("this.inspIdText: ", this.inspIdText);
     }
+
+    //passes in sandbox but not in chrome
+    // async selectVenue(venue: string) {
+    //     this.venueFilter.click();   
+    //     console.log('venue in selectVenue(): ', venue)
+    //      const optionLocator = this.venueOptionDropdown.locator(`li div:has-text("${venue}")`);
+    //      console.log('optionLocator: ', optionLocator)
+    //      await optionLocator.click();
+    //      await this.applyBtn.click();
+    // }
+    
+    // async verifyFilteredInspection(venue: string){
+    //     this.expandVenue = this.page.getByRole('link', { name: `▶ ${venue}` })
+    //     this.expandVenue.click();
+    //     this.inspIdText = await this.inspId.innerHTML();
+    //     console.log("this.inspIdText: ", this.inspIdText)
+    // }
 }

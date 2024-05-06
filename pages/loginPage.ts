@@ -22,8 +22,9 @@ export class LoginPage {
     }
 
     async gotoLoginPage(){
-        await this.page.goto(inspectionTestData.urls.login, { timeout: 80000 })
         console.log("login url: ", inspectionTestData.urls.login)
+        await this.page.goto(inspectionTestData.urls.login)
+        
     };
     async login(username: string, password: string){
         await this.emailClick.click();
