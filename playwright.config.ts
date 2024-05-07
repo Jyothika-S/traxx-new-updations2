@@ -17,7 +17,7 @@ dotenv.config();
  */
 export default defineConfig({
   // globalSetup: './global-setup.ts',
-
+  // globalSetup: require.resolve("./global-setup.ts"),
   testDir: './tests',
   timeout: 105 * 1000,
   /* Run tests in files in parallel */
@@ -30,14 +30,21 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   // reporter: 'html',
-  /*monocart*/
+  /*monocart report*/
+  // reporter: [
+  //   ['list'],
+  //   ['monocart-reporter', {  
+  //       name: "My Test Report",
+  //       outputFile: './test-results/report.html'
+  //   }]
+  // ],
+  /*allure report*/
   reporter: [
-    ['list'],
-    ['monocart-reporter', {  
-        name: "My Test Report",
-        outputFile: './test-results/report.html'
-    }]
-  ],
+      ['list'],
+      ['html'],
+      ['line'], ['allure-playwright', {outputFolder: 'allure-results'}]
+
+    ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -45,7 +52,7 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    // storageState: './loginAuth.json'
+    // storageState: './storageState.json'
   },
 
   /* Configure projects for major browsers */
@@ -63,17 +70,18 @@ export default defineConfig({
      },
     },
     {
-      name: 'chromium',
+      name: 'qa_chromium',
       // dependencies: ['setup'],
       use: { 
         ...devices['Desktop Chrome'],
         baseURL: 'https://app.qa.traxinsights.app/',
+        // storageState: './storageState.json',
         screenshot: 'on',
         video: 'on',
         trace: 'on',
         headless: false,
-
         // storageState: './loginAuth.json'
+        // storageState: 'loginAuth.json' //pass filename
      },
     },
     {

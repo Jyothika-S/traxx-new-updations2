@@ -26,10 +26,12 @@ console.log('password: ' + password)
 //         // await login.gotoLoginPage()
 //         // await login.login(username, password)
 //         // await login.verifyRedirection()
-//         // expect(login.currentURL).toBe(baseURL + inspectionTestData.urls.home);
+//         // await page.context().storageState({path: "loginAuth.json"})
 // })
 
-test('Inspection Workflow: Login, Create, Verify Details', async ({page}) => {
+// test('Inspection Workflow: Login, Create, Verify Details', async ({browser, page}) => {
+    // const context = await browser.newContext({storageState: "loginAuth.json"})
+test('Inspection Workflow: Login, Create, Verify Details', async ({browser, page}) => {
     const login = new LoginPage(page);
     const homePage = new HomePage(page);
     const inspLocation = new InspLocationPage(page);
@@ -41,7 +43,6 @@ test('Inspection Workflow: Login, Create, Verify Details', async ({page}) => {
         await login.gotoLoginPage()
         await login.login(username, password)
         await login.verifyRedirection()
-        // expect(login.currentURL).toBe(baseURL + inspectionTestData.urls.home);
     })
 
     //Inspection location page verification
@@ -50,7 +51,6 @@ test('Inspection Workflow: Login, Create, Verify Details', async ({page}) => {
         await homePage.goToMenu('Inspections')
         await homePage.goToSubMenu('Inspection Locations')
         await inspLocation.verifyInspLocPage();
-        // expect(inspLocation.currentURL).toBe(baseUrl + inspectionTestData.urls.inspection_location)
         expect.soft(inspLocation.inspectionLocationsText).toContain(inspectionTestData.expectedData.inspection_location_title)
         expect.soft(inspLocation.inspectionLocationsText).not.toBeNull();
         expect.soft(inspLocation.venue).toContainText(inspectionTestData.expectedData.inspection_location_venueLabel);
@@ -70,7 +70,6 @@ test('Inspection Workflow: Login, Create, Verify Details', async ({page}) => {
         expect.soft(inspLocation.confirmPopupContentText).toContain(inspectionTestData.expectedData.inspection_confirmPopup_content)
         expect.soft(inspLocation.completeInspYesBtn.isVisible()).toBeTruthy();
         expect.soft(inspLocation.completeInspNoBtn.isVisible()).toBeTruthy();
-        // expect(inspLocation.currentURL).toBe(inspectionTestData.urls.inspection_location)
 
         inspId = inspLocation.inspectionId;
         location = inspLocation.location;
