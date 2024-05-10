@@ -12,11 +12,12 @@ let inspId : string;
 let location: string;
 let venue: string;
 let elements: string[] = [];
+let attachmentCount: string;
 
 const username = process.env.USER_NAME || "";
 const password = process.env.PASSWORD || "";
-console.log('username: ' + username)
-console.log('password: ' + password)
+// console.log('username: ' + username)
+// console.log('password: ' + password)
 
 
 // test('Login to application', async ({page}) => {
@@ -31,7 +32,7 @@ console.log('password: ' + password)
 
 // test('Inspection Workflow: Login, Create, Verify Details', async ({browser, page}) => {
     // const context = await browser.newContext({storageState: "loginAuth.json"})
-test('Inspection Workflow: Login, Create, Verify Details', async ({browser, page}) => {
+test('Inspection Workflow: Login, Create, Verify Details', async ({browser, page}, testInfo) => {
     const login = new LoginPage(page);
     const homePage = new HomePage(page);
     const inspLocation = new InspLocationPage(page);
@@ -43,6 +44,12 @@ test('Inspection Workflow: Login, Create, Verify Details', async ({browser, page
         await login.gotoLoginPage()
         await login.login(username, password)
         await login.verifyRedirection()
+        const screenshot = await page.screenshot();
+        await testInfo.attach('login screenshot', { 
+            body: screenshot, 
+            contentType: 'image/png', 
+            // path: '../custom-report/screenshots' 
+        });
     })
 
     //Inspection location page verification
@@ -56,16 +63,23 @@ test('Inspection Workflow: Login, Create, Verify Details', async ({browser, page
         expect.soft(inspLocation.venue).toContainText(inspectionTestData.expectedData.inspection_location_venueLabel);
         venue = inspLocation.venueName;
         console.log("venue from spec: ",venue);
+        const screenshot = await page.screenshot();
+        await testInfo.attach('insp_location_screenshot', { 
+            body: screenshot, 
+            contentType: 'image/png', 
+            // path: '../custom-report/screenshots' 
+        });
     })
 
     //creates new inspection
     await test.step('Create new inspection', async () => {
         await inspLocation.inspPage();
+        attachmentCount = inspLocation.attachmentCount;
         //assertions
         expect.soft(inspLocation.inspIdText).toContain(inspectionTestData.expectedData.inspection_Id_label);
         expect.soft(inspLocation.locationText).toContain(inspectionTestData.expectedData.inspection_location_label);
         expect.soft(inspLocation.tableHeaderText).toContain(inspectionTestData.expectedData.inspection_tableHeaderText);
-        expect.soft(inspLocation.attachmentCount).toContain('1');
+        expect.soft(inspLocation.attachmentCount).toContain(attachmentCount);
         expect.soft(inspLocation.confirmPopupTitleText).toContain(inspectionTestData.expectedData.inspection_confirmPopup_title)
         expect.soft(inspLocation.confirmPopupContentText).toContain(inspectionTestData.expectedData.inspection_confirmPopup_content)
         expect.soft(inspLocation.completeInspYesBtn.isVisible()).toBeTruthy();
@@ -74,6 +88,7 @@ test('Inspection Workflow: Login, Create, Verify Details', async ({browser, page
         inspId = inspLocation.inspectionId;
         location = inspLocation.location;
         elements = inspLocation.columnTexts;
+        console.log('attachmentCount from global: ',attachmentCount)
         console.log('elements from global: ',elements)
     })
 

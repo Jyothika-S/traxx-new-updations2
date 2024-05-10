@@ -61,11 +61,11 @@ export class InspLocationPage {
         this.addAttachment = page.locator('#maincontent > div > div > inspection > div > section.content.col-lg-12.col-md-12.col-sm-12 > div.row.ng-star-inserted > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(4) > button')
         this.confirmPopupTitle = page.locator('#followUpScreen > div > div > div.modal-header.text-center')
         this.confirmPopupContent = page.locator('#followUpScreen > div > div > div.modal-body')
-        this.ratingAirPurifier = page.getByRole('button', { name: '4' })
-        this.ratingMirror = page.locator('#mat-button-toggle-9-button');
-        this.ratingClothes = page.locator('#mat-button-toggle-15-button')
-        this.ratingToilet = page.locator('#mat-button-toggle-18-button')
-        this.ratingConsumables = page.getByRole('button', { name: 'Complete', exact: true })
+        // this.ratingAirPurifier = page.getByRole('button', { name: '4' })
+        // this.ratingMirror = page.locator('#mat-button-toggle-9-button');
+        // this.ratingClothes = page.locator('#mat-button-toggle-15-button')
+        // this.ratingToilet = page.locator('#mat-button-toggle-18-button')
+        // this.ratingConsumables = page.getByRole('button', { name: 'Complete', exact: true })
         this.commentBox = page.getByPlaceholder('Place inspection comments here')
         this.attachmentPopupBtn = page.getByRole('button', { name: '' }).first()
         this.attachmentBtn = page.getByRole('button', { name: '+ Add Attachments' })
@@ -116,11 +116,20 @@ export class InspLocationPage {
         console.log("Column Texts:", this.columnTexts);
 
         //actions
-        await this.ratingAirPurifier.click();
-        await this.ratingMirror.click();
-        await this.ratingClothes.click();
-        await this.ratingToilet.click();
-        await this.ratingConsumables.click();
+        // await this.ratingAirPurifier.click();
+        // await this.ratingMirror.click();
+        // await this.ratingClothes.click();
+        // await this.ratingToilet.click();
+        // await this.ratingConsumables.click();
+
+        //loop table
+        const tableRows = await this.page.$$('table.table tbody tr');
+
+        for (const row of tableRows) {
+        const buttons = await row.$$('td:nth-child(3) button'); 
+        const randomButton = Math.floor(Math.random() * buttons.length);
+        await buttons[randomButton].click();
+        }
         await this.commentBox.click();
         await this.commentBox.fill(inspectionTestData.fillValues.inspection_comment);
 
