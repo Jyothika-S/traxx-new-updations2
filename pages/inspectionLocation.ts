@@ -49,23 +49,17 @@ export class InspLocationPage {
 
     constructor(page: Page) {
         this.page = page;
-        // this.locName = page.locator('#maincontent > div > div > locationoverview > section.content > div:nth-child(2) > div > div > div > table > tbody > tr > td')
         this.locName = page.locator('td:text("Automation Test Location")');
         this.venue = page.locator('locationoverview')
-        this.venueOption = page.locator('#maincontent > div > app-navigation > header > nav > div.header-bind.col-xs-12 > span:nth-child(2)')
+        this.inspLocTitle = page.locator('//*[@id="maincontent"]/div/div/locationoverview/section[1]/div/div/div[1]/span')
+        this.venueOption = page.locator('//*[@id="maincontent"]/div/app-navigation/header/nav/div[1]/span[2]')
         this.inspNowBtn = page.locator('div').filter({ hasText: /^Inspect Now$/ }).locator('i')
-        this.inspectionIdElement = page.locator('#maincontent > div > div > inspection > div > section.content-header.element-header > div > div.col-lg-7.col-sm-12.col-md-6 > span:nth-child(1)')
-        this.locationElement = page.locator('#maincontent > div > div > inspection > div > section.content-header.element-header > div > div.col-lg-7.col-sm-12.col-md-6 > span:nth-child(2)')
-        this.inspLocTitle = page.locator('#maincontent > div > div > locationoverview > section.content-header > div > div > div.col-lg-4.col-md-6.col-sm-12.form-heading > span')
-        this.tableHeader = page.locator('#maincontent > div > div > inspection > div > section.content.col-lg-12.col-md-12.col-sm-12 > div.row.ng-star-inserted > div > div > div > table > thead');
-        this.addAttachment = page.locator('#maincontent > div > div > inspection > div > section.content.col-lg-12.col-md-12.col-sm-12 > div.row.ng-star-inserted > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(4) > button')
-        this.confirmPopupTitle = page.locator('#followUpScreen > div > div > div.modal-header.text-center')
+        this.inspectionIdElement = page.locator('//*[@id="maincontent"]/div/div/inspection/div/section[1]/div/div[1]/span[1]')
+        this.locationElement = page.locator('//*[@id="maincontent"]/div/div/inspection/div/section[1]/div/div[1]/span[2]')
+        this.tableHeader = page.locator('//*[@id="maincontent"]/div/div/inspection/div/section[2]/div[1]/div/div/div/table/thead');
+        this.addAttachment = page.locator('//*[@id="maincontent"]/div/div/inspection/div/section[2]/div[1]/div/div/div/table/tbody[1]/tr/td[4]/button')
+        this.confirmPopupTitle = page.locator('//*[@id="followUpScreen"]/div/div/div[1]')
         this.confirmPopupContent = page.locator('#followUpScreen > div > div > div.modal-body')
-        // this.ratingAirPurifier = page.getByRole('button', { name: '4' })
-        // this.ratingMirror = page.locator('#mat-button-toggle-9-button');
-        // this.ratingClothes = page.locator('#mat-button-toggle-15-button')
-        // this.ratingToilet = page.locator('#mat-button-toggle-18-button')
-        // this.ratingConsumables = page.getByRole('button', { name: 'Complete', exact: true })
         this.commentBox = page.getByPlaceholder('Place inspection comments here')
         this.attachmentPopupBtn = page.getByRole('button', { name: '' }).first()
         this.attachmentBtn = page.getByRole('button', { name: '+ Add Attachments' })
@@ -75,7 +69,8 @@ export class InspLocationPage {
         this.completeInspBtn = page.getByRole('button', { name: 'Complete Inspection' })
         this.completeInspYesBtn = page.getByRole('button', { name: 'Yes' })
         this.completeInspNoBtn = page.getByRole('button', { name: 'No' })
-        this.colSelector = this.page.locator(`#maincontent > div > div > inspection > div > section.content.col-lg-12.col-md-12.col-sm-12 > div.row > div > div > div > table >`)
+        // this.colSelector = this.page.locator(`#maincontent > div > div > inspection > div > section.content.col-lg-12.col-md-12.col-sm-12 > div.row > div > div > div > table >`)
+        this.colSelector = this.page.locator('section.content div > table');
     }
 
     async verifyInspLocPage(){
@@ -106,21 +101,16 @@ export class InspLocationPage {
         console.log("loc: ", this.location)
 
         this.tableHeaderText = await this.tableHeader.innerText();
-        //table elements column
-        for (let i = 2; i <= 6; i++) {          
-            const elementColumn = this.page.locator(`${this.colSelector}tbody:nth-child(${i}) > tr > td.verticalalign`);
+        console.log("tableHeader: ", this.tableHeaderText);
+        //table element name column
+        for (let i = 2; i <= 6; i++) {       
+            // const elementColumn = this.page.locator(`${this.colSelector}tbody:nth-child(${i}) > tr > td.verticalalign`); 
+            const elementColumn = this.colSelector.locator(`tbody:nth-child(${i}) > tr > td.verticalalign`);
             this.columnText = await elementColumn.innerText();
             this.columnTexts.push(this.columnText);
-        }
-
-        console.log("Column Texts:", this.columnTexts);
-
-        //actions
-        // await this.ratingAirPurifier.click();
-        // await this.ratingMirror.click();
-        // await this.ratingClothes.click();
-        // await this.ratingToilet.click();
-        // await this.ratingConsumables.click();
+            console.log('this.columnText',this.columnText)
+        }       
+        console.log("Element Column Texts:", this.columnTexts);
 
         //loop table
         const tableRows = await this.page.$$('table.table tbody tr');

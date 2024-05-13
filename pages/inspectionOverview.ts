@@ -20,7 +20,9 @@ export class InspOverviewPage {
         this.venueFilter = page.locator('span').filter({ hasText: 'Select Venue' }).first()
         this.venueOptionDropdown = page.locator('ul.item2');
         this.applyBtn = page.getByRole('button', { name: 'Apply' })
-        this.inspId = page.locator('#maincontent > div > div > overviewdashboard-component > section.content.col-lg-12.col-md-12.col-sm-12 > div:nth-child(2) > div.col-md-12.venue-section > div.col-md-9 > div > div.col-md-8.expandmaxheight > div > div:nth-child(2) > p:nth-child(3)')
+        // this.inspId = page.locator('#maincontent > div > div > overviewdashboard-component > section.content.col-lg-12.col-md-12.col-sm-12 > div:nth-child(2) > div.col-md-12.venue-section > div.col-md-9 > div > div.col-md-8.expandmaxheight > div > div:nth-child(2) > p:nth-child(3)')
+        this.inspId = page.locator('//*[@id="maincontent"]/div/div/overviewdashboard-component/section[2]/div[2]/div[2]/div[2]/div[1]/div[2]/div/div[2]/p[3]')
+        
     }
 
     async gotoInspOverviewPage() {
