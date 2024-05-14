@@ -39,12 +39,14 @@ export default defineConfig({
   //   }]
   // ],
   /*allure report*/
-  reporter: [
-      ['list'],
-      ['html'],
-      ['line'], ['allure-playwright', {outputFolder: 'allure-results'}]
+  // reporter: [
+  //     ['list'],
+  //     ['html'],
+  //     ['line'], ['allure-playwright', {outputFolder: 'allure-results'}]
 
-    ],
+  //   ],
+  /*custom report*/
+  reporter: './custom-report/customReporter.ts',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -79,7 +81,7 @@ export default defineConfig({
         screenshot: 'on',
         video: 'on',
         trace: 'on',
-        headless: false,
+        // headless: false,
         // storageState: './loginAuth.json'
         // storageState: 'loginAuth.json' //pass filename
      },
