@@ -48,10 +48,16 @@ export default class MyReporter implements Reporter {
             }
             if(step.category === "test.step"){
                 console.log('.......................................................................................')
-                console.log('Status: ', result.status);
-                if (result.status === "failed") {
-                    console.log('Error: ', result.error?.message);
-                }
+                // console.log('Status: ', result.status);
+                // if (result.status === "failed") {
+                //     console.log('Error: ', result.error?.message);
+                // }
+                if (step.error) {
+                console.log(step.error.message);
+                console.log("----fail----");
+            } else {
+                console.log("----pass----");
+            }
                 //console.log('.......................................................................................')
             }
         // console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
