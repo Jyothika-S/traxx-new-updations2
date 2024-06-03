@@ -44,6 +44,11 @@ test('Inspection Workflow: Login, Create, Verify Details', async ({browser, page
         await login.gotoLoginPage()
         await login.login(username, password)
         await login.verifyRedirection()
+        testInfo.annotations.push({ type: 'credentials', description: `Username: ${username}, Password: ${password}` });
+        console.log(' testInfo.annotations', testInfo.annotations);
+        // const data2 = test.info().annotations.push({ type: 'credentials', description: `Username: ${username}, Password: ${password}` });
+        // console.log('testInfo data2##',test.info().annotations);
+
         const screenshot = await page.screenshot();
         await testInfo.attach('login screenshot', { 
             body: screenshot, 
@@ -63,12 +68,12 @@ test('Inspection Workflow: Login, Create, Verify Details', async ({browser, page
         expect.soft(inspLocation.venue).toContainText(inspectionTestData.expectedData.inspection_location_venueLabel);
         venue = inspLocation.venueName;
         console.log("venue from spec: ",venue);
-        const screenshot = await page.screenshot();
-        await testInfo.attach('insp_location_screenshot', { 
-            body: screenshot, 
-            contentType: 'image/png', 
-            // path: '../custom-report/screenshots' 
-        });
+        // const screenshot = await page.screenshot();
+        // await testInfo.attach('insp_location_screenshot', { 
+        //     body: screenshot, 
+        //     contentType: 'image/png', 
+        //     // path: '../custom-report/screenshots' 
+        // });
     })
 
     //creates new inspection
