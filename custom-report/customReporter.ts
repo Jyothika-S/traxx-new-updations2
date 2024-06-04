@@ -1,10 +1,11 @@
 import { FullConfig, FullResult, Reporter, Suite, TestCase, TestError, TestResult, TestStep } from '@playwright/test/reporter'
+import inspectionTestData from '../test-data/inspectionTestData.json'
 import moment from 'moment';
 import { TestInfo, test as test1} from '@playwright/test';
 var fs = require('fs');
 var os = require('os');
 const path = require('path');
-
+let fillValues = inspectionTestData.fillValues;
 let stepdescription: string[] = [];
 export default class MyReporter implements Reporter {
     dataSet = new Map();
@@ -19,6 +20,7 @@ export default class MyReporter implements Reporter {
     configData: { currEnv: string; startTime: string; totalTest: number, objective: string, platform: string, totalDuration: string }[] = [];
     // currentStepTitle: string = '';
     projectData: { name: string; baseURL: string }[] = [];
+    fillCounter = 0;
 
     public async addStepDetails(stepDescriptions: string[], expectedSteps: string, actualSteps: string, stepTitle: string, result: string = 'Pass') {
         console.log('> step descriptions:', stepDescriptions);
@@ -159,7 +161,17 @@ export default class MyReporter implements Reporter {
             if (step.title.includes('.click')) {
                 description = 'Click on element with locator - ' + step.title.replace('.click', '');
             } else if (step.title.includes('.fill')) {
+                this.fillCounter++; // to count .fill
+
                 description = 'Provide input for - ' + step.title.replace('.fill', '');
+
+                // append values from fillValues after excluding the first two .fill steps -> login credentials since its in env
+                if (this.fillCounter > 2) {
+                    const fillKeys = Object.keys(fillValues);
+                    const fillValue = fillValues[fillKeys[(this.fillCounter - 3) % fillKeys.length]];
+                    description += ` with value ${fillValue}`;
+                }
+
             } else if (step.title.includes('page.goto')) {
                 let endTitle: string | undefined;
                 test.parent.parent?.suites.forEach(suite => {
