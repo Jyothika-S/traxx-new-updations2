@@ -126,7 +126,7 @@ export class InspLocationPage {
         //add attachment
         await this.attachmentPopupBtn.click();
         await this.attachmentBtn.click();
-        await this.imgUpload.setInputFiles(inspectionTestData.fillValues.inspection_attachment_imgUpload);
+        await this.imgUpload.setInputFiles(inspectionTestData.images.inspection_attachment_imgUpload);
         await this.attachmentComments.fill(inspectionTestData.fillValues.inspection_attachment_comment);
         await this.attachmentSaveBtn.click();
         this.attachmentCount = await this.addAttachment.innerText();

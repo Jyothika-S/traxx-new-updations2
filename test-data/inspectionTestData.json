@@ -20,8 +20,10 @@
         "statistics_completedInspTable_title" : "Completed Inspections"
     },
     "fillValues" : {
-        "inspection_comment" : "testcomment",
-        "inspection_attachment_imgUpload" : "uploadItems/sampleFile.jpeg",
-        "inspection_attachment_comment" : "test comment"
+        "inspection_comment" : "testcomment",       
+        "inspection_attachment_comment" : "comment"
+    },
+    "images" : {
+        "inspection_attachment_imgUpload" : "uploadItems/sampleFile.jpeg"
     }
 }
