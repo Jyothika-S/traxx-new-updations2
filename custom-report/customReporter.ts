@@ -6,6 +6,7 @@ var fs = require('fs');
 var os = require('os');
 const path = require('path');
 let fillValues = inspectionTestData.fillValues;
+let expectContainValues = inspectionTestData.expectedData;
 let stepdescription: string[] = [];
 export default class MyReporter implements Reporter {
     dataSet = new Map();
@@ -15,41 +16,68 @@ export default class MyReporter implements Reporter {
     stepTitlesSet = new Map();
     set = new Map();
     credentials: { username: string; password: string } = { username: '', password: '' };
-    // configData: string[] = [];
-    // configData: { [key: string]: string | number } = {};
+    credentialsArray: { username: string; password: string }[] = [];
     configData: { currEnv: string; startTime: string; totalTest: number, objective: string, platform: string, totalDuration: string }[] = [];
-    // currentStepTitle: string = '';
     projectData: { name: string; baseURL: string }[] = [];
     fillCounter = 0;
+    expectContainCounter = 0;
+
+    username = process.env.USER_NAME || "";
+    password = process.env.PASSWORD || "";
+   
 
     public async addStepDetails(stepDescriptions: string[], expectedSteps: string, actualSteps: string, stepTitle: string, result: string = 'Pass') {
         console.log('> step descriptions:', stepDescriptions);
         console.log('> result:', result);
         console.log('--------------------------------------------------------')
+        // if (!this.dataSet.has(this.currentSpec)) {
+        //     this.dataSet.set(this.currentSpec, []);
+        //     this.resultSet.set(this.currentSpec, []);
+        //     this.expectedSet.set(this.currentSpec, []);
+        //     this.stepTitlesSet.set(this.currentSpec, []);
+        //     this.set.set(this.currentSpec, []);
+        // }
+    
+        // stepDescriptions.forEach((description) => {
+        //     if (!this.dataSet.get(this.currentSpec).includes(description)) {
+        //         this.dataSet.get(this.currentSpec).push(description);
+        //         this.expectedSet.get(this.currentSpec).push(expectedSteps);
+        //         this.set.get(this.currentSpec).push(actualSteps);
+        //         this.stepTitlesSet.get(this.currentSpec).push(stepTitle);
+        //         this.resultSet.get(this.currentSpec).push(result);
+        //     }
+        // });
+
         if (!this.dataSet.has(this.currentSpec)) {
             this.dataSet.set(this.currentSpec, []);
             this.resultSet.set(this.currentSpec, []);
             this.expectedSet.set(this.currentSpec, []);
             this.stepTitlesSet.set(this.currentSpec, []);
             this.set.set(this.currentSpec, []);
-        }
-    // console.log('...this.dataSet: ',this.dataSet)
-    // console.log('...this.currentSpec: ',this.currentSpec)
-    // console.log('...this.resultSet: ',this.resultSet)
-    // console.log('...this.expectedSet: ',this.expectedSet)
-    // console.log('@@this.stepTitlesSet: ',this.stepTitlesSet)
-    // console.log('...this.set: ',this.set)
-    
+          }
+        
+          stepDescriptions.forEach((description) => {
+            if (!description.includes('Expecting the content ')) {
+                // const phrases = ['Expecting the content ', 'Navigate to', 'Click on element', 'Provide input for'];
+                // const hasPhrase = phrases.some(phrase => description.includes(phrase));
 
-        stepDescriptions.forEach((description) => {
-            if (!this.dataSet.get(this.currentSpec).includes(description)) {
+                // if (!hasPhrase) {
+                if (!this.dataSet.get(this.currentSpec).includes(description)) {
+                  this.dataSet.get(this.currentSpec).push(description);
+                  this.expectedSet.get(this.currentSpec).push(expectedSteps);
+                  this.set.get(this.currentSpec).push(actualSteps);
+                  this.stepTitlesSet.get(this.currentSpec).push(stepTitle);
+                  this.resultSet.get(this.currentSpec).push(result);
+                }
+              } else {
                 this.dataSet.get(this.currentSpec).push(description);
                 this.expectedSet.get(this.currentSpec).push(expectedSteps);
                 this.set.get(this.currentSpec).push(actualSteps);
                 this.stepTitlesSet.get(this.currentSpec).push(stepTitle);
                 this.resultSet.get(this.currentSpec).push(result);
-            }
-        });
+              }
+          });
+        // console.log('1221stepDescriptions: ',stepDescriptions)
     }
 
     public async updateCurrentSpec(spec: string) {
@@ -57,22 +85,7 @@ export default class MyReporter implements Reporter {
     }
 
     onBegin(config: FullConfig, suite: Suite): void{
-        // console.log('--',suite.suites[0].suites[0].suites[0].title)
-        
-        // config.projects.forEach(project => {
-        //     console.log(`000Name: ${project.name}, BaseURL: ${project.use.baseURL}`);
-        //     const beginTitle = project.name;
-        //     // console.log('1234Begin Title: ' + beginTitle);
-        // });      
-
-        // config.projects.forEach(project => {
-        //     const projectInfo = `Name: ${project.name}, BaseURL: ${project.use.baseURL}`;
-        //     this.projectData.push(projectInfo);
-        //     console.log('1441projectInfo: ', projectInfo);
-            
-        //     const beginTitle = project.name;
-        //     console.log('1442beginTitle',beginTitle);
-        // });
+        // console.log('--',suite.suites[0].suites[0].suites[0].title)    
 
         this.projectData = config.projects.map(project => ({ name: project.name, baseURL: project.use.baseURL || ''}));
 
@@ -90,12 +103,6 @@ export default class MyReporter implements Reporter {
         const objective = suite.allTests()[0].title;  
         const platform = `${os.type()} ${os.release()} (${os.arch()})`;
         console.log('!!!!',startTime, currEnv, totalTest)
-        // this.configValue(currEnv)
-        // this.configValue(startTime)
-        // this.configValue(totaltest)
-        // this.configValue('startTime', startTime);
-        // this.configValue('totalTests', totaltest);
-        // this.configValue('currEnv', currEnv)
         this.configData.push({ currEnv, startTime, totalTest, objective, platform, totalDuration: '' });
         console.log('111',this.configData[0]?.currEnv)
     }
@@ -128,9 +135,11 @@ export default class MyReporter implements Reporter {
     }
     
     onStepEnd(test: TestCase, result: TestResult, step: TestStep): void{  
-        if (!step.title.includes('.click') && !step.title.includes('.fill') && !step.title.includes('page.goto')) {
+        if (!step.title.includes('.click') && !step.title.includes('.fill') && !step.title.includes('page.goto') && !step.title.includes('expect.soft.toContain')) {
             return;
         } 
+        console.log('env Username:', this.username);
+    console.log('env Password:', this.password);
         
         // if (step.title === 'Login to application') {
         //     const credentialsAnnotation = test.annotations.find(annotation => annotation.type === 'credentials');
@@ -147,37 +156,48 @@ export default class MyReporter implements Reporter {
         // }
 
         console.log('test step end: ', step.title)
-
-            // if (step.title.includes('.click')) {
-            //     console.log('Clicked on -', step.title);
-            // } else if (step.title.includes('.fill')) {
-            //     console.log('Provided input for -', step.title);
-            // } else {
-            //     console.log('test step end: ', step.title);
-            // }
-            //------------------------------
             let description: string = '';
-           
+            
             if (step.title.includes('.click')) {
                 description = 'Click on element with locator - ' + step.title.replace('.click', '');
-            } else if (step.title.includes('.fill')) {
-                this.fillCounter++; // to count .fill
-
+            } 
+            else if (step.title.includes('expect.soft.toContain')){
+                const keys = Object.keys(expectContainValues);
+                const key = keys[this.expectContainCounter % keys.length]; // get the current key
+                const expectedValue = expectContainValues[key];
+                description = `Ensure that the content has: <b>${expectedValue}</b>`;
+                this.expectContainCounter++; 
+            }
+             else if (step.title.includes('.fill')) {
+                this.fillCounter++;
+                // to count .fill
                 description = 'Provide input for - ' + step.title.replace('.fill', '');
+                // if (this.fillCounter <= 2) {
+                //   const credKeys = Object.keys(this.credentialsArray);
+                //   const credValue = this.credentialsArray[credKeys[(this.fillCounter - 1) % credKeys.length]];
+                //   description += ` with value ${credValue}`;
+                // if (this.fillCounter === 1) {
+                //     description += ` with value ${this.username}`;
+                //   } else if (this.fillCounter === 2) {
+                //     description += ` with value ${this.password}`;
 
-                // append values from fillValues after excluding the first two .fill steps -> login credentials since its in env
-                if (this.fillCounter > 2) {
-                    const fillKeys = Object.keys(fillValues);
-                    const fillValue = fillValues[fillKeys[(this.fillCounter - 3) % fillKeys.length]];
-                    description += ` with value ${fillValue}`;
-                }
-
+                if (step.title.includes(`locator.getByPlaceholder('Email ID')`)) {
+                    description += ` with value <b>${this.username}</b>`;
+                } else if (step.title.includes(`locator.getByPlaceholder('Password')`)) {
+                    description += ` with value <b>${this.password}</b>`;
+                }   
+                  
+                } else if (this.fillCounter > 2) {
+                  const fillKeys = Object.keys(fillValues);
+                  const fillValue = fillValues[fillKeys[(this.fillCounter - 3) % fillKeys.length]];
+                  description += ` with value <b>${fillValue}</b>`;
+                // }
             } else if (step.title.includes('page.goto')) {
                 let endTitle: string | undefined;
                 test.parent.parent?.suites.forEach(suite => {
                     if (suite.parent && suite.parent.title) {
                     endTitle = suite.parent.title;
-                    console.log('123endTitle: ', endTitle);
+                    // console.log('123endTitle: ', endTitle);
                     }
                 });
                 
@@ -202,7 +222,7 @@ export default class MyReporter implements Reporter {
             }
             
             stepdescription.push(description);
-
+            // console.log("1331step description: ", stepdescription)
 
             if(step.category === "test.step"){
                 const durationInSeconds = Math.floor(step.duration / 1000);
@@ -219,47 +239,25 @@ export default class MyReporter implements Reporter {
                 console.log('.......................................................................................')
                 return;
             }
-        // console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        // console.log('onStepEnd result status: ', result.status)
-        // console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        // console.log('onStepEnd test.results: ', test.results[0].attachments)
-        // console.log('onStepEnd result: ', result.attachments)
     }
     
     onTestEnd(test: TestCase, result: TestResult): void{
-        // console.log('test ended: ', test.title)
-        // console.log('result: ', result.status)
-
-        // console.log('-- ontest end -- ',result)
-
-        // console.log('-- ontest end -- ',test.results)
-        
-        // step titles
-        // test.results.forEach((result) => {
-        //     if (result.steps) {
-        //       result.steps.forEach((step) => {
-        //         console.log('title: ',step.title);
-        //       });
-        //     }
-        //   });       
-
-        // console.log('Logs: ',result.stdout)
-        // console.log('Attachments: ', test.results[0].attachments)
-        const credentialsArray: { username: string; password: string }[] = [];
+        // Reset the counters
+        // this.fillCounter = 0;
+        // this.expectContainCounter = 0;
         test.results.forEach((result) => {
             if (result.steps) {
               result.steps.forEach((step) => {
                 if (step.title === 'Login to application') {
                   const credentialsAnnotation = test.annotations.find(annotation => annotation.type === 'credentials');
-                  console.log('####credentialsAnnotation', credentialsAnnotation);
                   if (credentialsAnnotation && credentialsAnnotation.description) {
                     const [usernameLabel, usernameValue] = 
                     credentialsAnnotation.description.split(', ')[0].split(': ');
                     const [passwordLabel, passwordValue] = credentialsAnnotation.description.split(', ')[1].split(': ');
                     console.log('Username:', usernameValue);
                     console.log('Password:', passwordValue);
-                    credentialsArray.push({ username: usernameValue, password: passwordValue });
-                    console.log('Credentials:', credentialsArray);
+                    this.credentialsArray.push({ username: usernameValue, password: passwordValue });
+                    console.log('Credentials:', this.credentialsArray);
                   }
                 }
               });
@@ -302,14 +300,6 @@ export default class MyReporter implements Reporter {
         this.createHTML();
     }
 
-    // public async configValue(key: string, value: string | number) {
-    //     this.configData[key] = value.toString();
-    //     console.log('%%%%%%%')
-    //     console.log(JSON.stringify(this.configData['startTime']));
-
-    //     console.log(this.configData['totalTests'])
-    //     console.log(this.configData['currEnv'])
-    // }
     public async configValue(data: any) {
         this.configData.push(data);
     }
@@ -347,9 +337,9 @@ export default class MyReporter implements Reporter {
 
         htmlContent = htmlContent.concat('<tr style="white-space: nowrap;width=100%"><th style="background-color:#95ac95;width=25%" colspan="2">OS</th><td style="width=25%;colspan="2">' + this.configData[0]?.platform + '</td>');
         
-        htmlContent = htmlContent.concat('<tr style=\"white-space: nowrap;width=100%\"><th style=\"background-color:#95ac95;width=25%\" colspan=\"2\">Objective</th><td style = \"width=75%;font-size:14px;word-wrap:break-word;\" colspan=\"2\"><b>' + this.configData[0]?.objective + '</b></td></tr>')
+        htmlContent = htmlContent.concat('<tr style=\"white-space: nowrap;width=100%\"><th style=\"background-color:#95ac95;width=25%\" colspan=\"2\">Test Scenario</th><td style = \"width=75%;font-size:14px;word-wrap:break-word;\" colspan=\"2\"><b>' + this.configData[0]?.objective + '</b></td></tr>')
 
-        htmlContent = htmlContent.concat('<tr style="background-color:#c8d9c8"><th style="border: 1px solid black"><b>Test Scenario</b></th><th style="border: 1px solid black;text-align:center"><b>Step</b></th><th style="border: 1px solid black"><b>Step Description</b></th><th style="border: 1px solid black"><b>Expected Result</b></th><th style="border: 1px solid black"><b>Actual Result</b></th><th style="border: 1px solid black;text-align:center"><b>Status</b></th><th style="border: 1px solid black;text-align:center"><b>Screenshot</b></th></tr>');
+        htmlContent = htmlContent.concat('<tr style="background-color:#c8d9c8"><th style="border: 1px solid black"><b>Test Step</b></th><th style="border: 1px solid black;text-align:center"><b>Step</b></th><th style="border: 1px solid black"><b>Step Description</b></th><th style="border: 1px solid black"><b>Expected Result</b></th><th style="border: 1px solid black"><b>Actual Result</b></th><th style="border: 1px solid black;text-align:center"><b>Status</b></th><th style="border: 1px solid black;text-align:center"><b>Screenshot</b></th></tr>');
           
 
         // console.log('#####Datasets:', this.dataSet);
@@ -362,7 +352,7 @@ export default class MyReporter implements Reporter {
         const reusableMethods = {
             screenshots: [] 
         };
-    
+        // console.log('121this.dataSet: ',this.dataSet)
         this.dataSet.forEach((steps, spec) => {
             let isEnable = true;
             let addedTitles = new Set();
@@ -401,6 +391,6 @@ export default class MyReporter implements Reporter {
         htmlContent = htmlContent.concat("</table></body></html>");
 
         fs.writeFileSync(filePath, htmlContent, () => { });
-        console.log('htmlContent: ', htmlContent);
+        // console.log('htmlContent: ', htmlContent);
       }   
 }
