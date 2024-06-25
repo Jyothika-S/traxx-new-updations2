@@ -1,3 +1,5 @@
+import { Page } from "@playwright/test";
+
 export class ReusableMethods {
     async getCurrentFormattedDate(): Promise<{ month: string; day: string; year: number }> {
         const currentDate = new Date();
@@ -12,4 +14,9 @@ export class ReusableMethods {
         console.log('year consoled from utils: ', year)
         return { month, day, year };
     }
+
+    async captureScreenshot(page: Page, screenshotPath: string): Promise<void> {
+        await page.screenshot({ path: screenshotPath });
+        // console.log('Capture Screenshot');
+    }  
 }

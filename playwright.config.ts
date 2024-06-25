@@ -39,14 +39,19 @@ export default defineConfig({
   //   }]
   // ],
   /*allure report*/
-  // reporter: [
-  //     ['list'],
-  //     ['html'],
-  //     ['line'], ['allure-playwright', {outputFolder: 'allure-results'}]
-
-  //   ],
+  reporter: [
+      ['list'],
+      ['html'],
+      ['line'], 
+      ['allure-playwright', {outputFolder: 'allure-results'}],
+      ['monocart-reporter', {  
+              name: "My Test Report",
+              outputFile: './test-results/report.html'
+          }],
+  ['./custom-report/customReporter.ts'] 
+    ],
   /*custom report*/
-  reporter: './custom-report/customReporter.ts',
+  // reporter: './custom-report/customReporter.ts',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -72,7 +77,7 @@ export default defineConfig({
      },
     },
     {
-      name: 'qa_chromium',
+      name: 'QA_Chromium',
       // dependencies: ['setup'],
       use: { 
         ...devices['Desktop Chrome'],
@@ -86,36 +91,49 @@ export default defineConfig({
         // storageState: 'loginAuth.json' //pass filename
      },
     },
+    // {
+    //   name: 'Sandbox_Chrome',
+    //   use: { 
+    //     ...devices['Desktop Chrome'],
+    //     baseURL: 'https://app.sandbox.traxinsights.app/',
+    //     screenshot: 'on',
+    //     video: 'on',
+    //     trace: 'on',
+    //     headless: false,
+    //  },
+    // },
     {
-      name: 'sandbox',
-      use: { 
-        ...devices['Desktop Chrome'],
-        baseURL: 'https://app.sandbox.traxinsights.app/',
-        screenshot: 'on',
-        video: 'on',
-        trace: 'on',
-        headless: false,
-     },
-    },
-    {
-      name: 'firefox',
-      use: { 
+      name: 'QA_Firefox',
+      use: 
+      { 
         ...devices['Desktop Firefox'],
+        baseURL:'https://app.qa.traxinsights.app/',
         screenshot: 'on',
         video: 'on',
         trace: 'on',
       },
     },
-
     {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
+      name: 'QA_Edge',
+      use: 
+      { 
+        ...devices['Desktop Edge'],channel:'msedge',
+        baseURL:'https://app.qa.traxinsights.app/',
         screenshot: 'on',
         video: 'on',
         trace: 'on',
-        },
+      },   
     },
+
+    // {
+    //   name: 'webkit',
+    //   use: {
+    //     ...devices['Desktop Safari'],
+    //     screenshot: 'on',
+    //     video: 'on',
+    //     trace: 'on',
+    //     },
+    // },
 
     /* Test against mobile viewports. */
     // {

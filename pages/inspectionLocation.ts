@@ -1,8 +1,11 @@
 import { Locator, Page } from "@playwright/test";
 import inspectionTestData from "../test-data/inspectionTestData.json"
+import { ReusableMethods } from "../utils/reusable-methods"
+import path from "path";
 
 export class InspLocationPage {
     page: Page;
+    reusableMethods: any;
     locName: Locator;
     inspNowBtn: Locator;
     inspectionIdElement: Locator;
@@ -49,6 +52,7 @@ export class InspLocationPage {
 
     constructor(page: Page) {
         this.page = page;
+        this.reusableMethods = new ReusableMethods();
         this.locName = page.locator('td:text("Automation Test Location")');
         this.venue = page.locator('locationoverview')
         this.inspLocTitle = page.locator('//*[@id="maincontent"]/div/div/locationoverview/section[1]/div/div/div[1]/span')
@@ -102,8 +106,8 @@ export class InspLocationPage {
 
         this.tableHeaderText = await this.tableHeader.innerText();
         console.log("tableHeader: ", this.tableHeaderText);
-        //table element name column
-        for (let i = 2; i <= 6; i++) {       
+        // table element name column
+        for (let i = 2; i <= 5; i++) {       
             // const elementColumn = this.page.locator(`${this.colSelector}tbody:nth-child(${i}) > tr > td.verticalalign`); 
             const elementColumn = this.colSelector.locator(`tbody:nth-child(${i}) > tr > td.verticalalign`);
             this.columnText = await elementColumn.innerText();
@@ -128,14 +132,26 @@ export class InspLocationPage {
         await this.attachmentBtn.click();
         await this.imgUpload.setInputFiles(inspectionTestData.images.inspection_attachment_imgUpload);
         await this.attachmentComments.fill(inspectionTestData.fillValues.inspection_attachment_comment);
-        await this.attachmentSaveBtn.click();
+        console.log("Capture Screenshot1")
+        const screenshotPath = path.join('custom-report', 'screenshots', `screenshot_${Date.now()}.png`);
+        await this.reusableMethods.captureScreenshot(this.page, screenshotPath);
+        await this.attachmentSaveBtn.click();   
         this.attachmentCount = await this.addAttachment.innerText();
         //complete inspection part
+        await this.completeInspBtn.scrollIntoViewIfNeeded();
         await this.completeInspBtn.click();
-        this.confirmPopupTitleText = await this.confirmPopupTitle.innerText();
-        this.confirmPopupContentText = await this.confirmPopupContent.innerText();
-        await this.completeInspNoBtn.click();
+        // this.confirmPopupTitleText = await this.confirmPopupTitle.innerText();
+        // this.confirmPopupContentText = await this.confirmPopupContent.innerText();
+        // await this.completeInspNoBtn.click();
+        
+         // Check if the confirmation popup is present
+         if (await this.confirmPopupTitle.isVisible()) {
+            this.confirmPopupTitleText = await this.confirmPopupTitle.innerText();
+            this.confirmPopupContentText = await this.confirmPopupContent.innerText();
+            await this.completeInspNoBtn.click();
+        }
         await this.page.waitForURL(inspectionTestData.urls.inspection_location);
+        return screenshotPath;
     }
 
 }
