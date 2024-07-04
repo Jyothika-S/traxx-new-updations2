@@ -4,11 +4,13 @@ export class HomePage {
     page: Page;
     sidePanelToggle: Locator;
     menuSelector: Locator;
+    labelCheck: Locator;
 
     constructor(page: Page) {
         this.page = page;
         this.sidePanelToggle = page.getByRole('button', { name: ' Toggle navigation' });
         this.menuSelector = page.locator('a')
+        this.labelCheck = page.getByRole('navigation');
     }
     async toggleSidePanel() {
         await this.sidePanelToggle.click();

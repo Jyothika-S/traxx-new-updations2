@@ -14,6 +14,7 @@ export class InspOverviewPage {
     inspIdText: string;
     location: Locator;
     locationText: string;
+    inspIdTextTrimmed: string;
 
     constructor(page: Page) {
         this.page = page;
@@ -48,6 +49,7 @@ export class InspOverviewPage {
         await inspectionIdLocator.waitFor({ state: 'visible' });
 
         this.inspIdText = await inspectionIdLocator.innerHTML();
+        this.inspIdTextTrimmed = this.inspIdText.replace('<b>Inspection:</b> #', '');
         console.log("this.inspIdText: ", this.inspIdText);
     }
 
